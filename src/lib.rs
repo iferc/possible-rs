@@ -8,8 +8,10 @@ pub enum Possible<T> {
     Skip,
 }
 
+/// Note that tagged tests are temporary for debugging purposes,
+/// the goal is only for untagged results
 #[cfg(test)]
-mod tests {
+mod tagged_tests {
     use super::*;
     use pretty_assertions::assert_eq;
 
@@ -19,53 +21,103 @@ mod tests {
     }
 
     #[test]
-    fn with_some_value() -> Result<(), &'static str> {
+    fn baseline_with_option() {
+        #[derive(Debug, Deserialize, PartialEq)]
+        pub struct Parse {
+            test: Option<i64>,
+        }
+
         let json = r#"{ "test": 123 }"#;
-        let parsed: Result<Parse, &str> =
-            serde_json::from_str(json).or(Err("Failed to deserialize"));
+        let parsed: Parse = serde_json::from_str(json).unwrap();
 
         assert_eq!(
             parsed,
-            Ok(Parse {
-                test: Possible::Some(123),
-            }),
+            Parse { test: Some(123) },
             "Failed to parse expected number value"
         );
-
-        Ok(())
     }
 
     #[test]
-    fn with_null_value() -> Result<(), &'static str> {
-        let json = r#"{ "test": null }"#;
-        let parsed: Result<Parse, &str> =
-            serde_json::from_str(json).or(Err("Failed to deserialize"));
+    fn with_some_tagged_value() {
+        let json = r#"{ "test": { "Some": 123 } }"#;
+        let parsed: Parse = serde_json::from_str(json).unwrap();
 
         assert_eq!(
             parsed,
-            Ok(Parse {
+            Parse {
+                test: Possible::Some(123)
+            },
+            "Failed to parse expected number value"
+        );
+    }
+
+    #[test]
+    fn with_tagged_null_value() {
+        let json = r#"{ "test": { "None": null } }"#;
+        let parsed: Parse = serde_json::from_str(json).unwrap();
+
+        assert_eq!(
+            parsed,
+            Parse {
                 test: Possible::None,
-            }),
+            },
             "Failed to parse expected null value"
         );
-
-        Ok(())
     }
 
     #[test]
-    fn with_no_field() -> Result<(), &'static str> {
-        let json = r#"{ }"#;
-        let parsed: Result<Parse, &str> =
-            serde_json::from_str(json).or(Err("Failed to deserialize"));
+    fn with_tagged_no_field() {
+        let json = r#"{ "test": { "Skip": null} }"#;
+        let parsed: Parse = serde_json::from_str(json).unwrap();
 
         assert_eq!(
             parsed,
-            Ok(Parse {
+            Parse {
                 test: Possible::Skip,
-            }),
+            },
             "Failed to parse expected field omission"
         );
+    }
 
-        Ok(())
+    #[test]
+    fn with_some_untagged_value() {
+        let json = r#"{ "test": 123 }"#;
+        let parsed: Parse = serde_json::from_str(json).unwrap();
+
+        assert_eq!(
+            parsed,
+            Parse {
+                test: Possible::Some(123),
+            },
+            "Failed to parse expected number value"
+        );
+    }
+
+    #[test]
+    fn with_untagged_null_value() {
+        let json = r#"{ "test": null }"#;
+        let parsed: Parse = serde_json::from_str(json).unwrap();
+
+        assert_eq!(
+            parsed,
+            Parse {
+                test: Possible::None,
+            },
+            "Failed to parse expected null value"
+        );
+    }
+
+    #[test]
+    fn with_untagged_no_field() {
+        let json = r#"{ }"#;
+        let parsed: Parse = serde_json::from_str(json).unwrap();
+
+        assert_eq!(
+            parsed,
+            Parse {
+                test: Possible::Skip,
+            },
+            "Failed to parse expected field omission"
+        );
     }
 }
