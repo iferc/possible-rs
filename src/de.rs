@@ -19,7 +19,7 @@ where
     where
         E: Error,
     {
-        Ok(Possible::None)
+        Ok(Possible::Skip)
     }
 
     #[inline]

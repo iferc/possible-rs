@@ -14,15 +14,14 @@ impl<T> Default for Possible<T> {
     }
 }
 
-/// Note that tagged tests are temporary for debugging purposes,
-/// the goal is only for untagged results
 #[cfg(test)]
 mod tagged_tests {
     use super::*;
     use pretty_assertions::assert_eq;
     use serde::Deserialize;
 
-    #[derive(Debug, Deserialize, PartialEq)]
+    #[derive(Debug, Default, Deserialize, PartialEq)]
+    #[serde(default)]
     pub struct Parse {
         test: Possible<i64>,
     }
@@ -41,48 +40,6 @@ mod tagged_tests {
             parsed,
             Parse { test: Some(123) },
             "Failed to parse expected number value"
-        );
-    }
-
-    #[test]
-    fn with_some_tagged_value() {
-        let json = r#"{ "test": { "Some": 123 } }"#;
-        let parsed: Parse = serde_json::from_str(json).unwrap();
-
-        assert_eq!(
-            parsed,
-            Parse {
-                test: Possible::Some(123)
-            },
-            "Failed to parse expected number value"
-        );
-    }
-
-    #[test]
-    fn with_tagged_null_value() {
-        let json = r#"{ "test": { "None": null } }"#;
-        let parsed: Parse = serde_json::from_str(json).unwrap();
-
-        assert_eq!(
-            parsed,
-            Parse {
-                test: Possible::None,
-            },
-            "Failed to parse expected null value"
-        );
-    }
-
-    #[test]
-    fn with_tagged_no_field() {
-        let json = r#"{ "test": { "Skip": null} }"#;
-        let parsed: Parse = serde_json::from_str(json).unwrap();
-
-        assert_eq!(
-            parsed,
-            Parse {
-                test: Possible::Skip,
-            },
-            "Failed to parse expected field omission"
         );
     }
 
