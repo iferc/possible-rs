@@ -1,11 +1,17 @@
-use serde::Deserialize;
+mod de;
 
-#[derive(Debug, Deserialize, PartialEq)]
-#[serde(untagged)]
+#[derive(Debug, PartialEq)]
+// #[serde(untagged)]
 pub enum Possible<T> {
     Some(T),
     None,
     Skip,
+}
+
+impl<T> Default for Possible<T> {
+    fn default() -> Possible<T> {
+        Possible::Skip
+    }
 }
 
 /// Note that tagged tests are temporary for debugging purposes,
@@ -14,6 +20,7 @@ pub enum Possible<T> {
 mod tagged_tests {
     use super::*;
     use pretty_assertions::assert_eq;
+    use serde::Deserialize;
 
     #[derive(Debug, Deserialize, PartialEq)]
     pub struct Parse {
