@@ -9,6 +9,14 @@ fn expect_failed(msg: &str) -> ! {
 }
 
 impl<T> Possible<T> {
+    #[inline]
+    pub fn some(self) -> Option<T> {
+        match self {
+            Possible::Some(val) => Some(val),
+            Possible::None | Possible::Void => None,
+        }
+    }
+
     /// Returns the contained [`Some`] value, consuming the `self` value.
     ///
     /// # Panics
