@@ -1,5 +1,6 @@
 use super::Possible;
 use serde::{de::Visitor, Deserialize, Deserializer};
+use serde::{Serialize, Serializer};
 use std::{error::Error, fmt, marker::PhantomData};
 
 struct PossibleVisitor<T>(PhantomData<T>);
@@ -19,7 +20,7 @@ where
     where
         E: Error,
     {
-        Ok(Possible::Skip)
+        Ok(Possible::Void)
     }
 
     #[inline]
@@ -48,5 +49,21 @@ where
         D: Deserializer<'de>,
     {
         deserializer.deserialize_option(PossibleVisitor(PhantomData))
+    }
+}
+
+impl<T> Serialize for Possible<T>
+where
+    T: Serialize,
+{
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match *self {
+            Possible::Some(ref value) => serializer.serialize_some(value),
+            Possible::None => serializer.serialize_none(),
+            Possible::Void => serializer.serialize_unit(),
+        }
     }
 }
