@@ -134,4 +134,4 @@ Please make sure to update tests as appropriate.
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+[MIT](https://choosealicense.com/licenses/mit/) or [Apache 2](https://choosealicense.com/licenses/apache-2.0/)

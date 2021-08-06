@@ -3,11 +3,18 @@ name = "possible"
 version = "0.1.0"
 authors = ["iferc <github@iferc.ca>"]
 edition = "2018"
+description = """
+Rust library providing a three state enum for differentiating between an explicit null value and the absense of a value.
+"""
+repository = "https://github.com/iferc/possible-rs"
+keywords = ["possible", "option", "void", "undefined", "maybe"]
+license = "MIT OR Apache-2.0"
+readme = "./README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde = { version = "1", features = ["derive"] }
+serde = { version = "~1", features = ["derive"] }
 
 [dev-dependencies]
 doc-comment = "0.3.3"
