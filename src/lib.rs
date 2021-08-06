@@ -21,3 +21,7 @@ pub enum Possible<T> {
     None,
     Void,
 }
+
+// run doctests in project readme file
+#[cfg(doctest)]
+doc_comment::doctest!("../README.md", readme);

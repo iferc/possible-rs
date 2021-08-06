@@ -7,9 +7,10 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde = { version = "1.0.126", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
 
 [dev-dependencies]
+doc-comment = "0.3.3"
 pretty_assertions = "0.7.2"
 
 # serde libs for tests

@@ -7,7 +7,7 @@ mod with_possible {
     use serde::{Deserialize, Serialize};
 
     #[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
-    pub struct Parse {
+    pub struct ParseTest {
         // serde(default) is required to use Possible::Void when field is absent
         // this is due to toml by default assuming missing values should
         // equal a null actual value instead of undefined/void
@@ -20,12 +20,12 @@ mod with_possible {
     }
 
     mod serialization {
-        use super::{Parse, Possible};
+        use super::{ParseTest, Possible};
         use pretty_assertions::assert_eq;
 
         #[test]
         fn with_some_value() {
-            let data = Parse {
+            let data = ParseTest {
                 test: Possible::Some(123),
             };
             let serialized = toml::to_string(&data).unwrap();
@@ -39,7 +39,7 @@ mod with_possible {
 
         #[test]
         fn with_null_value() {
-            let data = Parse {
+            let data = ParseTest {
                 test: Possible::None,
             };
             let serialized = toml::to_string(&data).unwrap();
@@ -49,7 +49,7 @@ mod with_possible {
 
         #[test]
         fn with_no_field() {
-            let data = Parse {
+            let data = ParseTest {
                 test: Possible::Void,
             };
             let serialized = toml::to_string(&data).unwrap();
@@ -59,17 +59,17 @@ mod with_possible {
     }
 
     mod deserialization {
-        use super::{Parse, Possible};
+        use super::{ParseTest, Possible};
         use pretty_assertions::assert_eq;
 
         #[test]
         fn with_some_value() {
             let json = r#"test = 123"#;
-            let parsed: Parse = toml::from_str(json).unwrap();
+            let parsed: ParseTest = toml::from_str(json).unwrap();
 
             assert_eq!(
                 parsed,
-                Parse {
+                ParseTest {
                     test: Possible::Some(123),
                 },
                 "Failed to parse expected number value"
@@ -79,11 +79,11 @@ mod with_possible {
         #[test]
         fn with_no_field() {
             let json = r#""#;
-            let parsed: Parse = toml::from_str(json).unwrap();
+            let parsed: ParseTest = toml::from_str(json).unwrap();
 
             assert_eq!(
                 parsed,
-                Parse {
+                ParseTest {
                     test: Possible::Void,
                 },
                 "Failed to parse expected field omission"
@@ -96,17 +96,17 @@ mod baseline_with_option {
     use serde::{Deserialize, Serialize};
 
     #[derive(Debug, Deserialize, Serialize, PartialEq)]
-    pub struct Parse {
+    pub struct ParseTest {
         test: Option<i64>,
     }
 
     mod serialization {
-        use super::Parse;
+        use super::ParseTest;
         use pretty_assertions::assert_eq;
 
         #[test]
         fn with_option_some() {
-            let data = Parse { test: Some(123) };
+            let data = ParseTest { test: Some(123) };
             let serialized = toml::to_string(&data).unwrap();
 
             assert_eq!(
@@ -118,7 +118,7 @@ mod baseline_with_option {
 
         #[test]
         fn with_option_none() {
-            let data = Parse { test: None };
+            let data = ParseTest { test: None };
             let serialized = toml::to_string(&data).unwrap();
 
             assert_eq!(serialized, r#""#, "Failed to parse expected null value");
@@ -126,17 +126,17 @@ mod baseline_with_option {
     }
 
     mod deserialization {
-        use super::Parse;
+        use super::ParseTest;
         use pretty_assertions::assert_eq;
 
         #[test]
         fn with_option_some() {
             let toml = r#"test = 123"#;
-            let parsed: Parse = toml::from_str(toml).unwrap();
+            let parsed: ParseTest = toml::from_str(toml).unwrap();
 
             assert_eq!(
                 parsed,
-                Parse { test: Some(123) },
+                ParseTest { test: Some(123) },
                 "Failed to parse expected number value"
             );
         }
@@ -144,11 +144,11 @@ mod baseline_with_option {
         #[test]
         fn with_option_missing() {
             let toml = r#""#;
-            let parsed: Parse = toml::from_str(toml).unwrap();
+            let parsed: ParseTest = toml::from_str(toml).unwrap();
 
             assert_eq!(
                 parsed,
-                Parse { test: None },
+                ParseTest { test: None },
                 "Failed to parse expected missing field"
             );
         }
